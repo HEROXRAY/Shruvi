@@ -1,0 +1,25 @@
+name: Unzip and Commit
+
+on:
+  workflow_dispatch:
+
+jobs:
+  unzip_and_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Unzip file
+        run: unzip extract.zip -d extracted/
+      - name: Copy files to repo root (optional)
+        run: cp -r extracted/* .
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Commit and push extracted files
+        run: |
+          git add .
+          git commit -m "Add extracted files from ZIP" || echo "Nothing to commit"
+          git push
